@@ -43,6 +43,18 @@ class Items {
         
     }
 
+    function updateQuantity($itemId, $quantity) {
+
+        $this->parameters = [$quantity, $itemId];
+
+        $this->query = "UPDATE items SET quantity = ? WHERE id = ?";
+
+        $this->parametersTypes = "si";
+
+        return $this->connection->sendQuery($this->query, $this->parametersTypes, $this->parameters);
+        
+    }
+
     function delete($itemId) {
 
         $this->parameters = [$itemId];
@@ -114,6 +126,10 @@ class Cart {
         $this->getPending($userId);
 
         $cartId = $this->cart['id'];
+        
+        if (!$this->checkQuantity($itemId, $quantity)) {
+            return null;
+        }
 
         $oldItems    = explode(',', $this->cart['itemsId']);
         $oldQuantity = explode(',', $this->cart['quantities']);
@@ -135,10 +151,7 @@ class Cart {
             $price = implode(',', $oldPrices).",".$price;
         }
 
-
-
         $this->parameters = [$itemId, $quantity, $price, $cartId];
-
 
         $this->query = "UPDATE cart SET itemsId = ?, quantities = ?, prices = ? WHERE id = ?";
 
@@ -148,17 +161,33 @@ class Cart {
         
     }
 
+    function checkQuantity($itemId, $quantity) {
+
+        $itemModel = new Items();
+
+        $item = $itemModel->singleItem($itemId);
+
+        $quantityInStock = $item[0]["quantity"];
+
+        if (intval($quantityInStock) < intval($quantity)) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
     function getPending($userId) {
 
-        $this->parameters = ['pending', $userId];
+        $this->parameters = [$userId];
 
-        $this->query = "SELECT itemsId, quantities, prices, id FROM cart WHERE status = ? AND userId = ? ORDER BY id DESC LIMIT 1";
+        $this->query = "SELECT itemsId, quantities, prices, id, status FROM cart WHERE userId = ? ORDER BY id DESC LIMIT 1";
 
-        $this->parametersTypes = "si";
+        $this->parametersTypes = "i";
 
         $this->cart = $this->connection->querySpecificData($this->query, $this->parametersTypes, $this->parameters);
 
-        if ($this->cart) {
+        if ($this->cart && ($this->cart[0]['status'] !== 'checkout')) {
 
             $this->cart = $this->cart[0];
             
@@ -192,8 +221,24 @@ class Cart {
             return null;
         }
 
-        $this->parameters = ["checkout", $this->cart['id']];
+        $items      = explode(',', $this->cart['itemsId']);
+        $quantities = explode(',', $this->cart['quantities']);
 
+        foreach ($items as $index => $item) {
+
+            $itemModel = new Items();
+
+            $oldItem = $itemModel->singleItem($item);
+
+            $oldQuantity = $oldItem[0]["quantity"];
+
+            $newQuantity = floatval($oldQuantity) - floatval($quantities[$index]);
+
+            $itemModel->updateQuantity($item, $newQuantity);
+
+        }
+
+        $this->parameters = ["checkout", $this->cart['id']];
 
         $this->query = "UPDATE cart SET status = ? WHERE id = ?";
 

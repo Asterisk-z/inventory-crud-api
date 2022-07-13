@@ -7,7 +7,7 @@
     require_once("response.php");
 
     $connection = new Connection();
-    $query = new Items();
+    $items = new Items();
     $cart = new Cart();
     $response = new Response();
 
@@ -28,7 +28,7 @@
                 
             };
 
-            echo json_encode($response->error("Item Added Successfully"));
+            echo json_encode($response->error("Add to cart Failed"));
 
         }
     }
@@ -39,13 +39,13 @@
 
         if ($cart->checkout($userId)) {
 
-            echo json_encode($response->success("Item Updated Successfully"));
+            echo json_encode($response->success("Cart Checkout Successfully"));
 
             die();
             
         };
 
-        echo json_encode($response->error("Item Unable to update"));
+        echo json_encode($response->error("Cart Unable to Checkout"));
 
     }
 
@@ -53,7 +53,7 @@
         
         if (!empty($name) && !empty($price)  && !empty($quantity) && !empty($itemId) ) {
 
-            if ($query->update($itemId, $name, $price, $quantity)) {
+            if ($items->update($itemId, $name, $price, $quantity)) {
 
                 echo json_encode($response->success("Item Updated Successfully"));
 
@@ -72,7 +72,7 @@
 
         if (!empty($itemId) ) {
 
-            if ($query->delete($itemId)) {
+            if ($items->delete($itemId)) {
 
                 echo json_encode($response->success("Item Delete Successfully"));
 
@@ -89,7 +89,7 @@
 
         $userId = $_POST["userId"];
 
-        $data = $query->listByUser($userId);
+        $data = $items->listByUser($userId);
 
         if ($data) {
 
@@ -107,7 +107,7 @@
 
         $itemId = $_POST["itemId"];
 
-        $data = $query->singleItem($itemId);
+        $data = $items->singleItem($itemId);
 
         if ($data) {
 
@@ -125,7 +125,7 @@
 
     if ($_POST["action"] == "list-user-cart" && $_POST['user'] == "admin") {
 
-        $data = $query->list();
+        $data = $items->list();
 
         if ($data) {
 
