@@ -6,7 +6,7 @@ class Connection
     private $username = "general";
     private $password = "1234567890";
     private $database = "test";
-    private $conn;
+    private $connection;
     
     public function __construct()
     {

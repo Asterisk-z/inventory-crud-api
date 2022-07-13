@@ -161,6 +161,45 @@ class Cart {
         
     }
 
+    function removeItem($userId, $itemId) {
+
+      
+        $this->getPending($userId);
+
+        $cartId = $this->cart['id'];
+
+        $oldItems    = explode(',', $this->cart['itemsId']);
+        $oldQuantity = explode(',', $this->cart['quantities']);
+        $oldPrices   = explode(',', $this->cart['prices']);
+
+        if (in_array($itemId, $oldItems)) {
+
+            $index = array_search($itemId, $oldItems);
+
+            unset($oldItems[$index]);
+            unset($oldQuantity[$index]);
+            unset($oldPrices[$index]);
+
+            $itemId = implode(',', $oldItems);
+            $quantity = implode(',', $oldQuantity);
+            $price = implode(',', $oldPrices);
+
+        } else {
+            $itemId = implode(',', $oldItems);
+            $quantity = implode(',', $oldQuantity);
+            $price = implode(',', $oldPrices);
+        }
+
+        $this->parameters = [$itemId, $quantity, $price, $cartId];
+
+        $this->query = "UPDATE cart SET itemsId = ?, quantities = ?, prices = ? WHERE id = ?";
+
+        $this->parametersTypes = "sssi";
+
+        return $this->connection->sendQuery($this->query, $this->parametersTypes, $this->parameters);
+        
+    }
+
     function checkQuantity($itemId, $quantity) {
 
         $itemModel = new Items();

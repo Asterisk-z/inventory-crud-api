@@ -50,10 +50,13 @@
     }
 
     if ($_POST["action"] == "remove-cart-item") {
-        
-        if (!empty($name) && !empty($price)  && !empty($quantity) && !empty($itemId) ) {
 
-            if ($items->update($itemId, $name, $price, $quantity)) {
+        $itemId     = trim($_POST['itemId']);
+        $userId       = trim($_POST['userId']);
+        
+        if (!empty($itemId) ) {
+
+            if ($cart->removeItem($userId, $itemId)) {
 
                 echo json_encode($response->success("Item Updated Successfully"));
 

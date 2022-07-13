@@ -12,114 +12,20 @@
 
     if ($_POST["action"] == "create-user") {
         
-        $userId     = trim($_POST['userId']);
-        $name       = trim($_POST['name']);
-        $price      = trim($_POST['price']);
-        $quantity   = trim($_POST['quantity']);
+        $name    = trim($_POST['name']);
+        $role    = trim($_POST['role']);
+        $password = trim($_POST['password']);
 
-        if (!empty($name) && !empty($price)  && !empty($quantity) ) {
+        if (!empty($name)) {
 
-            if ($query->create($userId, $name, $price, $quantity)) {
+            if ($query->create_user($name, $password, $role)) {
 
-                echo json_encode($response->success("Item Added Successfully"));
+                echo json_encode($response->success("User Added Successfully"));
                 die();
                 
             };
 
-            echo json_encode($response->error("Item Added Successfully"));
+            echo json_encode($response->error("User Failed to register"));
 
         }
-    }
-
-    if ($_POST["action"] == "update-item") {
-        
-        $itemId     = trim($_POST['itemId']);
-        $name       = trim($_POST['name']);
-        $price      = trim($_POST['price']);
-        $quantity   = trim($_POST['quantity']);
-
-        if (!empty($name) && !empty($price)  && !empty($quantity) && !empty($itemId) ) {
-
-            if ($query->update($itemId, $name, $price, $quantity)) {
-
-                echo json_encode($response->success("Item Updated Successfully"));
-
-                die();
-                
-            };
-
-            echo json_encode($response->error("Item Unable to update"));
-
-        }
-    }
-
-    if ($_POST["action"] == "delete-item") {
-        
-        $itemId = trim($_POST['itemId']);
-
-        if (!empty($itemId) ) {
-
-            if ($query->delete($itemId)) {
-
-                echo json_encode($response->success("Item Delete Successfully"));
-
-                die();
-                
-            };
-
-            echo json_encode($response->error("Item Unable to update"));
-
-        }
-    }
-
-    if ($_POST["action"] == "list-items" && $_POST['user'] == "admin") {
-
-        $data = $query->list();
-
-        if ($data) {
-
-            echo json_encode($data);
-
-            die();
-            
-        };
-
-        echo json_encode($response->error("Item Unable to update"));
-
-    }
-
-    if ($_POST["action"] == "list-item" && $_POST['userId']) {
-
-        $userId = $_POST["userId"];
-
-        $data = $query->listByUser($userId);
-
-        if ($data) {
-
-            echo json_encode($data);
-
-            die();
-            
-        };
-
-        echo json_encode($response->error("Item Unable to update"));
-
-    }
-
-    if ($_POST["action"] == "single-item" ) {
-
-        $itemId = $_POST["itemId"];
-
-        $data = $query->singleItem($itemId);
-
-        if ($data) {
-
-            echo json_encode($data);
-
-            die();
-            
-        };
-
-        echo json_encode($response->error("Item Unable to update"));
-
     }
