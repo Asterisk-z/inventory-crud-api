@@ -1,6 +1,7 @@
 <?php 
 
     require_once ("connection.php");
+    require_once ("jwt.php");
 
     class Auth {
 
@@ -38,6 +39,9 @@
         function auth() {
             $iat = time();
             $exp = $iat + 60 * 5;
+            $payload = [
+                "iat" => $iat
+            ];
         }
 
 
