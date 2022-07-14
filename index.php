@@ -24,7 +24,7 @@
                 
             };
 
-            echo json_encode($response->error("Item Added Successfully"));
+            echo json_encode($response->error("Failed to Add Item"));
 
         }
     }

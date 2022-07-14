@@ -69,60 +69,6 @@
         }
     }
 
-    if ($_POST["action"] == "cancel-cart") {
-        
-        $itemId = trim($_POST['itemId']);
-
-        if (!empty($itemId) ) {
-
-            if ($items->delete($itemId)) {
-
-                echo json_encode($response->success("Item Delete Successfully"));
-
-                die();
-                
-            };
-
-            echo json_encode($response->error("Item Unable to update"));
-
-        }
-    }
-
-    if ($_POST["action"] == "list-user-cart" && $_POST['userId']) {
-
-        $userId = $_POST["userId"];
-
-        $data = $items->listByUser($userId);
-
-        if ($data) {
-
-            echo json_encode($data);
-
-            die();
-            
-        };
-
-        echo json_encode($response->error("Item Unable to update"));
-
-    }
-
-    if ($_POST["action"] == "single-item" ) {
-
-        $itemId = $_POST["itemId"];
-
-        $data = $items->singleItem($itemId);
-
-        if ($data) {
-
-            echo json_encode($data);
-
-            die();
-            
-        };
-
-        echo json_encode($response->error("Item Unable to update"));
-
-    }
 
 
 
